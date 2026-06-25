@@ -1,4 +1,4 @@
-# Meilisearch Plugin for Jellyfin (with Semantic Hybrid Search)
+# Meilisearch Plugin for Jellyfin<br>(with Semantic Hybrid Search)
 A plugin for Jellyfin that improves search by utilizing Meilisearch as a search engine. Search logic is offloaded to a Meilisearch instance, and the response from Jellyfin is modified.
 
 Improved:
