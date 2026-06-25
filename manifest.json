@@ -13,7 +13,7 @@
                 "changelog": "- Add semantic hybrid search support (EnableSemanticSearch, SemanticRatio, EmbedderName)",
                 "targetAbi": "10.11.7.0",
                 "sourceUrl": "https://github.com/Samxel/jellyfin-plugin-meilisearch-hybrid/releases/download/1.11.1.16/meilisearch_1.11.1.16.zip",
-                "checksum": "00000000000000000000000000000000",
+                "checksum": "39b9fd623fe96b0abd1b584e9698d8ed",
                 "timestamp": "2026-06-25T20:00:00Z"
             }
         ]
