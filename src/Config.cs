@@ -11,6 +11,9 @@ public class Config : BasePluginConfiguration
         Debug = false;
         IndexName = string.Empty;
         MatchingStrategy = "last";
+        EnableSemanticSearch = false;
+        EmbedderName = "semantic";
+        SemanticRatio = 0.5;
     }
 
     public string ApiKey { get; set; }
@@ -23,4 +26,12 @@ public class Config : BasePluginConfiguration
     /// Meilisearch matchingStrategy: "last", "all", or "frequency".
     /// </summary>
     public string MatchingStrategy { get; set; }
+
+    public bool EnableSemanticSearch { get; set; }
+    public string EmbedderName { get; set; }
+
+    /// <summary>
+    /// Hybrid search semantic ratio between 0.0 (full keyword) and 1.0 (full semantic).
+    /// </summary>
+    public double SemanticRatio { get; set; }
 }

@@ -56,19 +56,26 @@ public class MeilisearchRepositoryDecorator(
 
         try
         {
-            var matchingStrategy = Plugin.Instance?.Configuration.MatchingStrategy ?? "last";
+            var config = Plugin.Instance?.Configuration;
+            var matchingStrategy = config?.MatchingStrategy ?? "last";
             var limit = Math.Max(filter.Limit is > 0 ? filter.Limit.Value : 30, 1);
             var typeFilter = string.Join(" OR ", types.Select(t => $"type = \"{t}\""));
-            var result = await index.SearchAsync<MeilisearchItem>(
-                searchTerm,
-                new SearchQuery
+            var query = new SearchQuery
+            {
+                Filter = typeFilter,
+                Offset = filter.StartIndex ?? 0,
+                Limit = limit,
+                MatchingStrategy = matchingStrategy,
+            };
+            if (config?.EnableSemanticSearch == true)
+            {
+                query.Hybrid = new HybridSearch
                 {
-                    Filter = typeFilter,
-                    Offset = filter.StartIndex ?? 0,
-                    Limit = limit,
-                    MatchingStrategy = matchingStrategy,
-                }
-            ).ConfigureAwait(false);
+                    Embedder = config.EmbedderName,
+                    SemanticRatio = (float)config.SemanticRatio,
+                };
+            }
+            var result = await index.SearchAsync<MeilisearchItem>(searchTerm, query).ConfigureAwait(false);
 
             List<Guid> ids = [];
             foreach (var hit in result.Hits)

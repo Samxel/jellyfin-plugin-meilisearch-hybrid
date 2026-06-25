@@ -93,6 +93,25 @@
                 </div>
                 <div class="checkboxContainer checkboxContainer-withDescription">
                     <label class="emby-checkbox-label">
+                        <input id="EnableSemanticSearch" is="emby-checkbox" name="EnableSemanticSearch" type="checkbox"/>
+                        <span>Enable Semantic (Hybrid) Search</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">
+                        Requires a configured embedder in Meilisearch. Combines keyword and vector search.
+                    </div>
+                </div>
+                <div class="inputContainer" id="semanticOptions">
+                    <label class="inputLabel inputLabelUnfocused" for="EmbedderName">Embedder Name</label>
+                    <input id="EmbedderName" is="emby-input" name="EmbedderName" type="text"/>
+                    <div class="fieldDescription">Name of the embedder configured in Meilisearch (default: semantic).</div>
+                </div>
+                <div class="inputContainer" id="semanticRatioContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="SemanticRatio">Semantic Ratio: <span id="SemanticRatioValue">0.5</span></label>
+                    <input id="SemanticRatio" name="SemanticRatio" type="range" min="0" max="1" step="0.05" style="width:100%"/>
+                    <div class="fieldDescription">0.0 = full keyword search, 1.0 = full semantic search.</div>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label class="emby-checkbox-label">
                         <input id="Debug" is="emby-checkbox" name="Debug" type="checkbox"/>
                         <span>Debug Output</span>
                     </label>
@@ -150,6 +169,12 @@
             reindexBtn.addEventListener('click', () => updateStatus('reindex'));
 
 
+            const semanticRatioInput = document.querySelector('#SemanticRatio');
+            const semanticRatioValue = document.querySelector('#SemanticRatioValue');
+            semanticRatioInput.addEventListener('input', () => {
+                semanticRatioValue.textContent = parseFloat(semanticRatioInput.value).toFixed(2);
+            });
+
             document.querySelector('#MeilisearchConfigPage')
                 .addEventListener('pageshow', function () {
                     Dashboard.showLoadingMsg();
@@ -159,6 +184,11 @@
                         document.querySelector('#Debug').checked = config.Debug;
                         document.querySelector('#IndexName').value = config.IndexName;
                         document.querySelector('#MatchingStrategy').value = config.MatchingStrategy || 'last';
+                        document.querySelector('#EnableSemanticSearch').checked = config.EnableSemanticSearch || false;
+                        document.querySelector('#EmbedderName').value = config.EmbedderName || 'semantic';
+                        const ratio = config.SemanticRatio != null ? config.SemanticRatio : 0.5;
+                        semanticRatioInput.value = ratio;
+                        semanticRatioValue.textContent = parseFloat(ratio).toFixed(2);
                         Dashboard.hideLoadingMsg();
                     });
                     updateStatus('status');
@@ -173,6 +203,9 @@
                         config.Debug = document.querySelector('#Debug').checked;
                         config.IndexName = document.querySelector('#IndexName').value;
                         config.MatchingStrategy = document.querySelector('#MatchingStrategy').value;
+                        config.EnableSemanticSearch = document.querySelector('#EnableSemanticSearch').checked;
+                        config.EmbedderName = document.querySelector('#EmbedderName').value || 'semantic';
+                        config.SemanticRatio = parseFloat(semanticRatioInput.value);
                         ApiClient.updatePluginConfiguration(id, config).then(result => {
                             Dashboard.processPluginConfigurationUpdateResult(result);
                         });
